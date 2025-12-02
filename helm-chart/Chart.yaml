@@ -2,8 +2,8 @@ apiVersion: v2
 name: helmchecker
 description: A Kubernetes CronJob that checks for outdated Helm charts and creates pull requests for updates
 type: application
-version: 0.1.8
-appVersion: "0.1.8"
+version: 0.1.11
+appVersion: "0.1.11"
 home: https://github.com/marccoxall/helmchecker
 sources:
   - https://github.com/marccoxall/helmchecker
