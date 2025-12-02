@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/go-git/go-git/v5"
+	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -28,7 +28,7 @@ func NewClient(cfg gitconfig.GitConfig) *Client {
 }
 
 // CloneRepository clones a repository to a temporary directory
-func (c *Client) CloneRepository(ctx context.Context) (string, *git.Repository, error) {
+func (c *Client) CloneRepository(ctx context.Context) (string, *gogit.Repository, error) {
 	// Create a temporary directory
 	tempDir, err := os.MkdirTemp("", "helmchecker-*")
 	if err != nil {
@@ -36,7 +36,7 @@ func (c *Client) CloneRepository(ctx context.Context) (string, *git.Repository, 
 	}
 
 	// Clone the repository
-	repo, err := git.PlainCloneContext(ctx, tempDir, false, &git.CloneOptions{
+	repo, err := gogit.PlainCloneContext(ctx, tempDir, false, &gogit.CloneOptions{
 		URL:      c.config.Repository,
 		Progress: os.Stdout,
 	})
@@ -51,7 +51,7 @@ func (c *Client) CloneRepository(ctx context.Context) (string, *git.Repository, 
 }
 
 // CreateBranch creates a new branch from the base branch
-func (c *Client) CreateBranch(repo *git.Repository, branchName string) error {
+func (c *Client) CreateBranch(repo *gogit.Repository, branchName string) error {
 	workTree, err := repo.Worktree()
 	if err != nil {
 		return fmt.Errorf("failed to get worktree: %w", err)
@@ -65,7 +65,7 @@ func (c *Client) CreateBranch(repo *git.Repository, branchName string) error {
 
 	// Create and checkout the new branch
 	branchRefName := fmt.Sprintf("refs/heads/%s", branchName)
-	err = workTree.Checkout(&git.CheckoutOptions{
+	err = workTree.Checkout(&gogit.CheckoutOptions{
 		Branch: headRef.Name(),
 		Create: true,
 		Force:  true,
@@ -85,7 +85,7 @@ func (c *Client) CreateBranch(repo *git.Repository, branchName string) error {
 }
 
 // CommitChanges commits changes to the repository
-func (c *Client) CommitChanges(repo *git.Repository, message string) error {
+func (c *Client) CommitChanges(repo *gogit.Repository, message string) error {
 	workTree, err := repo.Worktree()
 	if err != nil {
 		return fmt.Errorf("failed to get worktree: %w", err)
@@ -98,7 +98,7 @@ func (c *Client) CommitChanges(repo *git.Repository, message string) error {
 	}
 
 	// Commit the changes
-	commit, err := workTree.Commit(message, &git.CommitOptions{
+	commit, err := workTree.Commit(message, &gogit.CommitOptions{
 		Author: &object.Signature{
 			Name:  c.config.Username,
 			Email: c.config.Email,
@@ -120,7 +120,7 @@ func (c *Client) CommitChanges(repo *git.Repository, message string) error {
 }
 
 // PushBranch pushes a branch to the remote repository
-func (c *Client) PushBranch(repo *git.Repository, branchName string) error {
+func (c *Client) PushBranch(repo *gogit.Repository, branchName string) error {
 	// Configure authentication
 	auth := &http.BasicAuth{
 		Username: c.config.Username,
@@ -128,7 +128,7 @@ func (c *Client) PushBranch(repo *git.Repository, branchName string) error {
 	}
 
 	// Push the branch
-	err := repo.Push(&git.PushOptions{
+	err := repo.Push(&gogit.PushOptions{
 		RemoteName: "origin",
 		RefSpecs: []config.RefSpec{
 			config.RefSpec(fmt.Sprintf("refs/heads/%s:refs/heads/%s", branchName, branchName)),

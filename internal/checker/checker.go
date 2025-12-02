@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/go-git/go-git/v5"
+	gogit "github.com/go-git/go-git/v5"
 	"github.com/marccoxall/helmchecker/internal/config"
 	gitclient "github.com/marccoxall/helmchecker/internal/git"
 	"github.com/marccoxall/helmchecker/internal/github"
@@ -148,7 +148,7 @@ func (c *Checker) processUpdates(ctx context.Context, updates []*ChartUpdate) er
 }
 
 // processUpdate processes a single chart update
-func (c *Checker) processUpdate(ctx context.Context, repoPath string, repo *git.Repository, update *ChartUpdate) error {
+func (c *Checker) processUpdate(ctx context.Context, repoPath string, repo *gogit.Repository, update *ChartUpdate) error {
 	branchName := fmt.Sprintf("update-%s-%s", update.Release.Chart, update.LatestVersion)
 	
 	log.Printf("Processing update for %s: %s -> %s", 
