@@ -11,8 +11,15 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,6 +36,7 @@ jobs:
           helm package helm-chart --destination ./_site/
           helm repo index ./_site/ --url https://ninjatec.github.io/helmchecker/
           ls -la ./_site/
+          cat ./_site/index.yaml
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
