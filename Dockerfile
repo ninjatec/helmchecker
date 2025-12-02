@@ -14,8 +14,10 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o helmchecker ./cmd/helmchecker
+# Build the application with optimizations for cross-compilation
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-s -w" -o helmchecker ./cmd/helmchecker
 
 # Final stage
 FROM alpine:latest
