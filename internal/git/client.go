@@ -41,7 +41,9 @@ func (c *Client) CloneRepository(ctx context.Context) (string, *git.Repository, 
 		Progress: os.Stdout,
 	})
 	if err != nil {
-		os.RemoveAll(tempDir)
+		if removeErr := os.RemoveAll(tempDir); removeErr != nil {
+			fmt.Printf("Warning: failed to clean up temp directory: %v\n", removeErr)
+		}
 		return "", nil, fmt.Errorf("failed to clone repository: %w", err)
 	}
 

@@ -78,7 +78,7 @@ func (c *Client) ListReleases(ctx context.Context) ([]*Release, error) {
 		}
 
 		// Try to determine the repository
-		if rel.Chart.Metadata.Sources != nil && len(rel.Chart.Metadata.Sources) > 0 {
+		if len(rel.Chart.Metadata.Sources) > 0 {
 			release.Repository = rel.Chart.Metadata.Sources[0]
 		}
 

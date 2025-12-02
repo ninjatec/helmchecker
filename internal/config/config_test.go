@@ -7,10 +7,10 @@ import (
 
 func TestLoad(t *testing.T) {
 	// Set some test environment variables
-	os.Setenv("KUBERNETES_NAMESPACE", "test-namespace")
-	os.Setenv("GIT_REPOSITORY", "https://github.com/test/repo.git")
-	os.Setenv("GITHUB_TOKEN", "test-token")
-	os.Setenv("CHECKER_DRY_RUN", "true")
+	_ = os.Setenv("KUBERNETES_NAMESPACE", "test-namespace")
+	_ = os.Setenv("GIT_REPOSITORY", "https://github.com/test/repo.git")
+	_ = os.Setenv("GITHUB_TOKEN", "test-token")
+	_ = os.Setenv("CHECKER_DRY_RUN", "true")
 
 	cfg, err := Load()
 	if err != nil {
@@ -34,15 +34,15 @@ func TestLoad(t *testing.T) {
 	}
 
 	// Clean up
-	os.Unsetenv("KUBERNETES_NAMESPACE")
-	os.Unsetenv("GIT_REPOSITORY")
-	os.Unsetenv("GITHUB_TOKEN")
-	os.Unsetenv("CHECKER_DRY_RUN")
+	_ = os.Unsetenv("KUBERNETES_NAMESPACE")
+	_ = os.Unsetenv("GIT_REPOSITORY")
+	_ = os.Unsetenv("GITHUB_TOKEN")
+	_ = os.Unsetenv("CHECKER_DRY_RUN")
 }
 
 func TestGetEnvOrDefault(t *testing.T) {
 	// Test with existing env var
-	os.Setenv("TEST_VAR", "test-value")
+	_ = os.Setenv("TEST_VAR", "test-value")
 	result := getEnvOrDefault("TEST_VAR", "default")
 	if result != "test-value" {
 		t.Errorf("Expected 'test-value', got '%s'", result)
@@ -54,26 +54,26 @@ func TestGetEnvOrDefault(t *testing.T) {
 		t.Errorf("Expected 'default', got '%s'", result)
 	}
 
-	os.Unsetenv("TEST_VAR")
+	_ = os.Unsetenv("TEST_VAR")
 }
 
 func TestGetBoolEnvOrDefault(t *testing.T) {
 	// Test with true
-	os.Setenv("TEST_BOOL", "true")
+	_ = os.Setenv("TEST_BOOL", "true")
 	result := getBoolEnvOrDefault("TEST_BOOL", false)
 	if !result {
 		t.Errorf("Expected true, got false")
 	}
 
 	// Test with false
-	os.Setenv("TEST_BOOL", "false")
+	_ = os.Setenv("TEST_BOOL", "false")
 	result = getBoolEnvOrDefault("TEST_BOOL", true)
 	if result {
 		t.Errorf("Expected false, got true")
 	}
 
 	// Test with invalid value (should return default)
-	os.Setenv("TEST_BOOL", "invalid")
+	_ = os.Setenv("TEST_BOOL", "invalid")
 	result = getBoolEnvOrDefault("TEST_BOOL", true)
 	if !result {
 		t.Errorf("Expected true (default), got false")
@@ -85,5 +85,5 @@ func TestGetBoolEnvOrDefault(t *testing.T) {
 		t.Errorf("Expected true (default), got false")
 	}
 
-	os.Unsetenv("TEST_BOOL")
+	_ = os.Unsetenv("TEST_BOOL")
 }
