@@ -7,51 +7,37 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
-  release:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Configure Git
-      run: |
-        git config user.name "$GITHUB_ACTOR"
-        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-    - name: Install Helm
-      uses: azure/setup-helm@v3
-      with:
-        version: v3.14.0
-
-    - name: Package and Index Chart
-      run: |
-        # Create charts directory if it doesn't exist
-        mkdir -p charts
+      - name: Checkout
+        uses: actions/checkout@v4
         
-        # Package the chart
-        helm package helm-chart --destination charts/
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+          
+      - name: Package Chart
+        run: |
+          mkdir -p ./_site
+          helm package helm-chart --destination ./_site/
+          helm repo index ./_site/ --url https://ninjatec.github.io/helmchecker/
+          ls -la ./_site/
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
         
-        # Generate index
-        helm repo index charts/ --url https://ninjatec.github.io/helmchecker
-        
-        # List files for verification
-        ls -la charts/
-
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Upload to Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: charts
-
-    - name: Deploy to Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
