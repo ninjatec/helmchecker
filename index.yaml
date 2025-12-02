@@ -2,8 +2,31 @@ apiVersion: v1
 entries:
   helmchecker:
   - apiVersion: v2
+    appVersion: 0.1.13
+    created: "2025-12-02T19:36:51.203631129Z"
+    description: A Kubernetes CronJob that checks for outdated Helm charts and creates
+      pull requests for updates
+    digest: f2ea38a38ff005a1ca899cab8ebffdd1561062773e8e9a1491fed794d08c2e1c
+    home: https://github.com/marccoxall/helmchecker
+    keywords:
+    - helm
+    - charts
+    - kubernetes
+    - automation
+    - updates
+    maintainers:
+    - email: marc@example.com
+      name: Marc Coxall
+    name: helmchecker
+    sources:
+    - https://github.com/marccoxall/helmchecker
+    type: application
+    urls:
+    - https://ninjatec.github.io/helmchecker/helmchecker-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
     appVersion: 0.1.12
-    created: "2025-12-02T19:18:22.576753552Z"
+    created: "2025-12-02T19:36:51.203184774Z"
     description: A Kubernetes CronJob that checks for outdated Helm charts and creates
       pull requests for updates
     digest: 807df46e231c055144517aff258da38a7f63e2c88fbec1e9a1267e896dc2d56d
@@ -26,7 +49,7 @@ entries:
     version: 0.1.12
   - apiVersion: v2
     appVersion: 0.1.11
-    created: "2025-12-02T19:18:22.576300564Z"
+    created: "2025-12-02T19:36:51.202739982Z"
     description: A Kubernetes CronJob that checks for outdated Helm charts and creates
       pull requests for updates
     digest: 2bdc48962c4632fe6dc4e464ca5af1b4f3d2202bbc2714def78557f29b95b277
@@ -49,7 +72,7 @@ entries:
     version: 0.1.11
   - apiVersion: v2
     appVersion: 0.1.8
-    created: "2025-12-02T19:18:22.57763466Z"
+    created: "2025-12-02T19:36:51.204491248Z"
     description: A Kubernetes CronJob that checks for outdated Helm charts and creates
       pull requests for updates
     digest: 53a3b8a16a2eb1b86ebda8d71b947c19bad0d45215e343cd1faae6c9cb61a39a
@@ -72,7 +95,7 @@ entries:
     version: 0.1.8
   - apiVersion: v2
     appVersion: 0.1.6
-    created: "2025-12-02T19:18:22.577203633Z"
+    created: "2025-12-02T19:36:51.204045134Z"
     description: A Kubernetes CronJob that checks for outdated Helm charts and creates
       pull requests for updates
     digest: 341dc8b481b3e3228d2054e783ab9a34341d56f9433829fd385b11f0868ec689
@@ -93,4 +116,4 @@ entries:
     urls:
     - https://ninjatec.github.io/helmchecker/helmchecker-0.1.6.tgz
     version: 0.1.6
-generated: "2025-12-02T19:18:22.57566959Z"
+generated: "2025-12-02T19:36:51.202127636Z"
