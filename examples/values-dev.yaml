@@ -1,0 +1,44 @@
+# Example values file for development environment
+# Copy this file to values-dev.yaml and customize as needed
+
+image:
+  repository: helmchecker
+  tag: dev
+  pullPolicy: Always
+
+config:
+  git:
+    repository: "https://github.com/example/helm-charts.git"
+    username: "helmchecker-dev"
+    email: "helmchecker-dev@example.com"
+    branch: "main"
+
+  github:
+    owner: "example"
+    repo: "helm-charts"
+
+  checker:
+    dryRun: true  # Enable dry run for development
+    excludeCharts:
+      - "kube-system-chart"
+    commitMessage: "[DEV] chore: update helm chart %s to version %s"
+    pullRequestTitle: "[DEV] Update Helm chart %s to version %s"
+
+secrets:
+  # Replace with your actual GitHub token
+  githubToken: "ghp_example_token_replace_with_real_one"
+
+cronjob:
+  # Run more frequently for testing (every hour)
+  schedule: "0 * * * *"
+  suspend: false
+
+# Resource limits for development
+container:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi

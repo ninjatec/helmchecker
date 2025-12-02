@@ -1,0 +1,41 @@
+# Bin directory for compiled binaries
+/bin/
+
+# Go module cache
+go.sum
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Helm
+*.tgz
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# Test coverage
+coverage.out
+coverage.html
+
+# Local configuration overrides
+values-local.yaml
+values-override.yaml
+*-local.yaml

@@ -1,0 +1,114 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "helmchecker.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "helmchecker.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  {{- if .Values.cronjob.timeZone }}
+  timeZone: {{ .Values.cronjob.timeZone | quote }}
+  {{- end }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
+  suspend: {{ .Values.cronjob.suspend }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
+  {{- if .Values.cronjob.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  {{- end }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "helmchecker.selectorLabels" . | nindent 12 }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "helmchecker.serviceAccountName" . }}
+          restartPolicy: {{ .Values.pod.restartPolicy }}
+          {{- with .Values.pod.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pod.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pod.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pod.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: helmchecker
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- with .Values.container.securityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            env:
+            - name: KUBERNETES_NAMESPACE
+              value: {{ .Values.config.kubernetes.namespace | quote }}
+            - name: GIT_REPOSITORY
+              value: {{ .Values.config.git.repository | quote }}
+            - name: GIT_USERNAME
+              value: {{ .Values.config.git.username | quote }}
+            - name: GIT_EMAIL
+              value: {{ .Values.config.git.email | quote }}
+            - name: GIT_BRANCH
+              value: {{ .Values.config.git.branch | quote }}
+            - name: GITHUB_OWNER
+              value: {{ .Values.config.github.owner | quote }}
+            - name: GITHUB_REPO
+              value: {{ .Values.config.github.repo | quote }}
+            - name: CHECKER_DRY_RUN
+              value: {{ .Values.config.checker.dryRun | quote }}
+            - name: CHECKER_CHECK_PRERELEASE
+              value: {{ .Values.config.checker.checkPrerelease | quote }}
+            - name: CHECKER_COMMIT_MESSAGE
+              value: {{ .Values.config.checker.commitMessage | quote }}
+            - name: CHECKER_PR_TITLE
+              value: {{ .Values.config.checker.pullRequestTitle | quote }}
+            - name: CHECKER_PR_BODY
+              value: {{ .Values.config.checker.pullRequestBody | quote }}
+            {{- if .Values.secrets.githubToken }}
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helmchecker.fullname" . }}-secrets
+                  key: github-token
+            {{- end }}
+            {{- if or .Values.secrets.gitToken .Values.secrets.githubToken }}
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "helmchecker.fullname" . }}-secrets
+                  key: git-token
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.container.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumes:
+          - name: tmp
+            emptyDir: {}
+          {{- with .Values.extraVolumes }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}

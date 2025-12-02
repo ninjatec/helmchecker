@@ -1,0 +1,106 @@
+# Example values file for production environment
+# Copy this file to values-prod.yaml and customize as needed
+
+image:
+  repository: your-registry.com/helmchecker
+  tag: "v0.1.0"
+  pullPolicy: IfNotPresent
+
+config:
+  git:
+    repository: "https://github.com/your-org/helm-charts.git"
+    username: "helmchecker-bot"
+    email: "helmchecker-bot@your-org.com"
+    branch: "main"
+
+  github:
+    owner: "your-org"
+    repo: "helm-charts"
+
+  checker:
+    dryRun: false  # Production mode - actually create PRs
+    excludeCharts:
+      - "critical-system-chart"
+      - "monitoring-stack"
+    includeCharts: []  # Check all charts except excluded ones
+    checkPrerelease: false
+    commitMessage: "chore(helm): update %s chart to version %s"
+    pullRequestTitle: "🤖 Update Helm chart %s to version %s"
+    pullRequestBody: |
+      ## Automated Helm Chart Update
+      
+      This PR updates the Helm chart **%s** from version `%s` to `%s`.
+
+      ### Changes
+      - 📦 Updated chart version
+      - 🚀 Updated application version (if applicable)
+      - 📋 Please review changelog and breaking changes
+
+      ### Pre-deployment Checklist
+      - [ ] Review chart changelog for breaking changes
+      - [ ] Test deployment in staging environment
+      - [ ] Verify application functionality
+      - [ ] Check resource requirements and limits
+
+      ### Post-deployment
+      - [ ] Monitor application health
+      - [ ] Verify new features/fixes are working
+      - [ ] Update documentation if needed
+
+      ---
+      *Generated automatically by helmchecker 🤖*
+
+secrets:
+  # Use external secret management in production
+  githubToken: ""  # Managed externally
+
+cronjob:
+  # Run daily at 2 AM UTC
+  schedule: "0 2 * * *"
+  timeZone: "UTC"
+  suspend: false
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 3
+
+# Production resource limits
+container:
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65534
+    capabilities:
+      drop:
+        - ALL
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+pod:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
+  # Schedule on specific nodes if needed
+  nodeSelector:
+    node-role: worker
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "automation"
+      effect: "NoSchedule"
+
+rbac:
+  create: true
+  additionalRules: []
+
+serviceAccount:
+  create: true
+  annotations:
+    # Add any required annotations for your environment
+    # eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT:role/helmchecker-role"
