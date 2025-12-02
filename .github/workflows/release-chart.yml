@@ -30,14 +30,36 @@ jobs:
         with:
           version: v3.14.0
           
-      - name: Prepare chart directory
+      - name: Package Chart and Create Release
         run: |
-          mkdir -p charts
-          cp -r helm-chart charts/helmchecker
+          # Package the chart
+          helm package helm-chart
           
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
+          # Get the chart name and version
+          CHART_NAME=$(helm show chart helm-chart | grep '^name:' | cut -d' ' -f2)
+          CHART_VERSION=$(helm show chart helm-chart | grep '^version:' | cut -d' ' -f2)
+          PACKAGE_NAME="${CHART_NAME}-${CHART_VERSION}.tgz"
+          
+          echo "Chart: $CHART_NAME"
+          echo "Version: $CHART_VERSION"
+          echo "Package: $PACKAGE_NAME"
+          
+          # Create GitHub release
+          gh release create "v${CHART_VERSION}" "$PACKAGE_NAME" \
+            --title "Release v${CHART_VERSION}" \
+            --notes "Helm chart release v${CHART_VERSION}"
+            
+          # Clone to gh-pages branch and update
+          git checkout --orphan gh-pages
+          git rm -rf .
+          
+          # Copy the package and create index
+          cp "$PACKAGE_NAME" .
+          helm repo index . --url "https://ninjatec.github.io/helmchecker/"
+          
+          # Commit and push
+          git add .
+          git commit -m "Release $PACKAGE_NAME"
+          git push origin gh-pages --force
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        with:
-          charts_dir: charts
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
