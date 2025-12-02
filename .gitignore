@@ -1,9 +1,6 @@
 # Bin directory for compiled binaries
 /bin/
 
-# Go module cache
-go.sum
-
 # Temporary files
 *.tmp
 *.temp
