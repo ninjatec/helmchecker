@@ -24,12 +24,18 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates git openssh-client
 
-WORKDIR /root/
+# Create a non-root user with specific UID/GID
+RUN adduser -D -s /bin/sh -u 1000 helmchecker
+
+WORKDIR /app
 
 # Copy the binary from builder stage with execute permissions
 COPY --from=builder --chmod=755 /app/helmchecker .
 
-# Create directory for SSH keys
-RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh
+# Create directory for SSH keys that can be accessed by the non-root user
+RUN mkdir -p /home/helmchecker/.ssh && chmod 700 /home/helmchecker/.ssh && chown -R helmchecker:helmchecker /home/helmchecker
+
+# Switch to non-root user
+USER helmchecker
 
 ENTRYPOINT ["./helmchecker"]

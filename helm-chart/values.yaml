@@ -4,7 +4,7 @@
 # Image configuration
 image:
   repository: ghcr.io/ninjatec/helmchecker
-  tag: "0.1.12"
+  tag: "0.1.13"
   pullPolicy: Always
 
 # Image pull secrets (if needed for private registry)
@@ -34,9 +34,9 @@ pod:
   # Security context for the pod
   securityContext:
     runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   # Node selector for pod scheduling
   nodeSelector: {}
   # Tolerations for pod scheduling
