@@ -101,17 +101,33 @@ jobs:
             --title "Release v${CHART_VERSION}" \
             --notes "Helm chart release v${CHART_VERSION}" || echo "Release may already exist"
             
-          # Setup gh-pages branch and update
-          git checkout --orphan gh-pages
-          git rm -rf .
+          # Setup gh-pages branch (preserve existing if it exists)
+          if git show-ref --verify --quiet refs/remotes/origin/gh-pages; then
+            echo "📦 Checking out existing gh-pages branch..."
+            git fetch origin gh-pages
+            git checkout gh-pages
+            git pull origin gh-pages
+          else
+            echo "📦 Creating new gh-pages branch..."
+            git checkout --orphan gh-pages
+            git rm -rf . || true
+          fi
           
-          # Copy the package and create index
+          # Copy the new package
           cp "/tmp/chart-release/$PACKAGE_NAME" .
-          helm repo index . --url "https://ninjatec.github.io/helmchecker/"
+          
+          # Generate or update index (merge with existing to preserve older versions)
+          if [ -f "index.yaml" ]; then
+            echo "📋 Merging with existing index to preserve older versions..."
+            helm repo index . --url "https://ninjatec.github.io/helmchecker/" --merge index.yaml
+          else
+            echo "📋 Creating new index..."
+            helm repo index . --url "https://ninjatec.github.io/helmchecker/"
+          fi
           
           # Commit and push
           git add .
-          git commit -m "Release $PACKAGE_NAME"
-          git push origin gh-pages --force
+          git commit -m "Release $PACKAGE_NAME" || echo "No changes to commit"
+          git push origin gh-pages
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
