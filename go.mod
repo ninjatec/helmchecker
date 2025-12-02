@@ -7,7 +7,6 @@ require (
 	github.com/google/go-github/v56 v56.0.0
 	golang.org/x/oauth2 v0.15.0
 	helm.sh/helm/v3 v3.13.3
-	k8s.io/client-go v0.28.4
 )
 
 require (
@@ -145,6 +144,7 @@ require (
 	k8s.io/apimachinery v0.28.4 // indirect
 	k8s.io/apiserver v0.28.4 // indirect
 	k8s.io/cli-runtime v0.28.4 // indirect
+	k8s.io/client-go v0.28.4 // indirect
 	k8s.io/component-base v0.28.4 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
