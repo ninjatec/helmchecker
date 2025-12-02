@@ -4,7 +4,7 @@
 # Image configuration
 image:
   repository: ghcr.io/ninjatec/helmchecker
-  tag: "0.1.6"
+  tag: "0.1.12"
   pullPolicy: Always
 
 # Image pull secrets (if needed for private registry)
