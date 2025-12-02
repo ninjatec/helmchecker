@@ -44,17 +44,21 @@ jobs:
           echo "Version: $CHART_VERSION"
           echo "Package: $PACKAGE_NAME"
           
+          # Move package to a safe location
+          mkdir -p /tmp/chart-release
+          mv "$PACKAGE_NAME" /tmp/chart-release/
+          
           # Create GitHub release
-          gh release create "v${CHART_VERSION}" "$PACKAGE_NAME" \
+          gh release create "v${CHART_VERSION}" "/tmp/chart-release/$PACKAGE_NAME" \
             --title "Release v${CHART_VERSION}" \
-            --notes "Helm chart release v${CHART_VERSION}"
+            --notes "Helm chart release v${CHART_VERSION}" || echo "Release may already exist"
             
-          # Clone to gh-pages branch and update
+          # Setup gh-pages branch and update
           git checkout --orphan gh-pages
           git rm -rf .
           
           # Copy the package and create index
-          cp "$PACKAGE_NAME" .
+          cp "/tmp/chart-release/$PACKAGE_NAME" .
           helm repo index . --url "https://ninjatec.github.io/helmchecker/"
           
           # Commit and push
