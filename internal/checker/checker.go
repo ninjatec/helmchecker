@@ -131,7 +131,11 @@ func (c *Checker) processUpdates(ctx context.Context, updates []*ChartUpdate) er
 	if err != nil {
 		return fmt.Errorf("failed to clone repository: %w", err)
 	}
-	defer os.RemoveAll(repoPath)
+	defer func() {
+		if err := os.RemoveAll(repoPath); err != nil {
+			log.Printf("Warning: failed to clean up temp directory %s: %v", repoPath, err)
+		}
+	}()
 
 	for _, update := range updates {
 		if err := c.processUpdate(ctx, repoPath, repo, update); err != nil {

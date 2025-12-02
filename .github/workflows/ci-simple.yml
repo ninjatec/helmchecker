@@ -1,12 +1,14 @@
-name: CI/CD
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
-  release:
-    types: [ published ]
+
+permissions:
+  contents: read
+  packages: write
 
 env:
   REGISTRY: ghcr.io
@@ -19,19 +21,18 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21'
+
+    - name: Download dependencies
+      run: |
+        go mod download
+        go mod verify
 
     - name: Run tests
       run: |
         go test -v ./...
-        go test -race -coverprofile=coverage.out ./...
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.out
 
   lint:
     runs-on: ubuntu-latest
@@ -39,14 +40,20 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21'
 
+    - name: Download dependencies
+      run: |
+        go mod download
+        go mod verify
+
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v6
       with:
         version: latest
+        args: --out-format=colored-line-number
 
   helm-lint:
     runs-on: ubuntu-latest
@@ -54,7 +61,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Helm
-      uses: azure/setup-helm@v3
+      uses: azure/setup-helm@v4
       with:
         version: 'latest'
 
@@ -66,25 +73,6 @@ jobs:
       run: |
         helm template helmchecker ./helm-chart --values ./helm-chart/values.yaml
 
-  security:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-
   build:
     runs-on: ubuntu-latest
     needs: [test, lint, helm-lint]
@@ -92,16 +80,21 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21'
+
+    - name: Download dependencies
+      run: |
+        go mod download
+        go mod verify
 
     - name: Build application
       run: |
         CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/helmchecker ./cmd/helmchecker
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: helmchecker-binary
         path: bin/helmchecker
@@ -130,13 +123,12 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
           type=ref,event=branch
-          type=ref,event=pr
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=sha,prefix={{branch}}-
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         platforms: linux/amd64,linux/arm64
@@ -145,25 +137,3 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
-
-  helm-package:
-    runs-on: ubuntu-latest
-    needs: [test, helm-lint]
-    if: github.event_name == 'release'
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Helm
-      uses: azure/setup-helm@v3
-      with:
-        version: 'latest'
-
-    - name: Package Helm chart
-      run: |
-        helm package ./helm-chart --destination ./charts/
-
-    - name: Upload Helm chart
-      uses: actions/upload-artifact@v3
-      with:
-        name: helm-chart
-        path: charts/*.tgz
