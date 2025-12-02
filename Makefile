@@ -71,12 +71,30 @@ helm-package: ## Package the Helm chart
 
 helm-index: helm-package ## Generate Helm repository index
 	@echo "Generating Helm repository index..."
-	helm repo index charts/ --url https://ninjatec.github.io/helmchecker
+	@if [ -f "charts/index.yaml" ]; then \
+		echo "Merging with existing index to preserve older versions..."; \
+		helm repo index charts/ --url https://ninjatec.github.io/helmchecker --merge charts/index.yaml; \
+	else \
+		echo "Creating new index..."; \
+		helm repo index charts/ --url https://ninjatec.github.io/helmchecker; \
+	fi
 
 helm-publish: helm-index ## Publish Helm chart to repository
 	@echo "Publishing Helm chart..."
+	@echo "Available chart versions:"
+	@if [ -f "charts/index.yaml" ]; then \
+		grep "version:" charts/index.yaml | grep -v "^apiVersion:" | sort -u; \
+	fi
 	@echo "Make sure to commit and push the changes in charts/ directory"
 	@echo "GitHub Pages will automatically serve the repository"
+
+helm-versions: ## Show available chart versions
+	@echo "Available chart versions:"
+	@if [ -f "charts/index.yaml" ]; then \
+		grep "version:" charts/index.yaml | grep -v "^apiVersion:" | sort -V; \
+	else \
+		echo "No index file found. Run 'make helm-index' first."; \
+	fi
 
 # Development targets
 dev-setup: ## Set up development environment
