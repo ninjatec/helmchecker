@@ -65,6 +65,19 @@ clean: ## Clean build artifacts
 	rm -rf bin/
 	docker rmi $(DOCKER_REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG) 2>/dev/null || true
 
+helm-package: ## Package the Helm chart
+	@echo "Packaging Helm chart..."
+	helm package helm-chart --destination charts/
+
+helm-index: helm-package ## Generate Helm repository index
+	@echo "Generating Helm repository index..."
+	helm repo index charts/ --url https://ninjatec.github.io/helmchecker
+
+helm-publish: helm-index ## Publish Helm chart to repository
+	@echo "Publishing Helm chart..."
+	@echo "Make sure to commit and push the changes in charts/ directory"
+	@echo "GitHub Pages will automatically serve the repository"
+
 # Development targets
 dev-setup: ## Set up development environment
 	@echo "Setting up development environment..."
