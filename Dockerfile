@@ -26,8 +26,8 @@ RUN apk --no-cache add ca-certificates git openssh-client
 
 WORKDIR /root/
 
-# Copy the binary from builder stage
-COPY --from=builder /app/helmchecker .
+# Copy the binary from builder stage with execute permissions
+COPY --from=builder --chmod=755 /app/helmchecker .
 
 # Create directory for SSH keys
 RUN mkdir -p ~/.ssh && chmod 700 ~/.ssh
