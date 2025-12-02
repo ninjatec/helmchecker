@@ -113,10 +113,27 @@ git push origin main
 ## Best Practices
 
 1. **Semantic Versioning**: Use semver for chart versions
-2. **Changelog**: Maintain CHANGELOG.md for version history
-3. **Security**: Sign charts with GPG keys for production
-4. **Testing**: Validate charts before publishing
-5. **Documentation**: Include comprehensive README and examples
+2. **Version Preservation**: All older chart versions are automatically preserved
+3. **Changelog**: Maintain CHANGELOG.md for version history
+4. **Security**: Sign charts with GPG keys for production
+5. **Testing**: Validate charts before publishing
+6. **Documentation**: Include comprehensive README and examples
+
+## Version Management
+
+The publishing process automatically preserves all older chart versions:
+- The `helm repo index --merge` command ensures older versions remain available
+- Both GitHub Actions and local scripts maintain version history
+- Users can install any previously published version
+
+Check available versions:
+```bash
+# Using make command
+make helm-versions
+
+# Using helm directly
+helm search repo ninjatec/helmchecker --versions
+```
 
 ## Consumer Documentation
 
