@@ -7,6 +7,7 @@ require (
 	github.com/google/go-github/v56 v56.0.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/oauth2 v0.32.0
+	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.18.5
 )
 
@@ -124,7 +125,6 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.33.3 // indirect
 	k8s.io/apiextensions-apiserver v0.33.3 // indirect
 	k8s.io/apimachinery v0.33.3 // indirect

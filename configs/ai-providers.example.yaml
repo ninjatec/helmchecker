@@ -1,0 +1,125 @@
+# AI Provider Configuration Example
+# Copy this file to ai-providers.yaml and configure with your credentials
+
+ai:
+  # Provider configurations
+  providers:
+    # GitHub Copilot provider
+    - name: github-copilot
+      type: copilot
+      enabled: true
+      priority: 1
+      auth:
+        # Set your GitHub token with Copilot access
+        token: ${GITHUB_TOKEN}
+      config:
+        model: gpt-4
+        temperature: 0.3
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        concurrent_requests: 5
+
+    # OpenAI GPT-4 Turbo provider
+    - name: openai-gpt4-turbo
+      type: openai
+      enabled: true
+      priority: 2
+      auth:
+        # Set your OpenAI API key
+        api_key: ${OPENAI_API_KEY}
+      config:
+        model: gpt-4-turbo
+        temperature: 0.3
+        max_tokens: 4096
+        top_p: 1.0
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        tokens_per_minute: 100000
+        concurrent_requests: 10
+
+    # OpenAI GPT-4o provider (optional)
+    - name: openai-gpt4o
+      type: openai
+      enabled: false
+      priority: 3
+      auth:
+        api_key: ${OPENAI_API_KEY}
+      config:
+        model: gpt-4o
+        temperature: 0.3
+        max_tokens: 4096
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        tokens_per_minute: 100000
+
+    # Anthropic Claude provider (optional)
+    # - name: anthropic-claude
+    #   type: anthropic
+    #   enabled: false
+    #   priority: 4
+    #   auth:
+    #     api_key: ${ANTHROPIC_API_KEY}
+    #   config:
+    #     model: claude-3-opus-20240229
+    #     temperature: 0.3
+    #     max_tokens: 4096
+    #   retry:
+    #     max_retries: 3
+    #     initial_delay: 1s
+    #     max_delay: 30s
+    #     multiplier: 2.0
+    #   cache:
+    #     enabled: true
+    #     ttl: 3600
+    #   rate_limits:
+    #     requests_per_minute: 50
+
+  # Global caching configuration
+  caching:
+    enabled: true
+    ttl: 3600  # seconds (1 hour)
+    max_size: 100MB  # Maximum cache size
+    eviction_policy: lru  # Least Recently Used
+
+  # Global rate limiting configuration
+  rate_limiting:
+    requests_per_minute: 60
+    tokens_per_minute: 100000
+
+# Environment Variable Override Examples:
+# 
+# AI_CACHE_ENABLED=true
+# AI_CACHE_TTL=7200
+# AI_CACHE_MAX_SIZE=200MB
+# AI_RATE_LIMIT_RPM=120
+# 
+# AI_PROVIDER_GITHUB_COPILOT_ENABLED=true
+# AI_PROVIDER_GITHUB_COPILOT_PRIORITY=1
+# AI_PROVIDER_GITHUB_COPILOT_TOKEN=ghp_xxxxx
+# 
+# AI_PROVIDER_OPENAI_GPT4_TURBO_ENABLED=true
+# AI_PROVIDER_OPENAI_GPT4_TURBO_API_KEY=sk-xxxxx

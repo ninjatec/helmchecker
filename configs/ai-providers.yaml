@@ -1,0 +1,86 @@
+# AI Provider Configuration
+
+ai:
+  # Provider configurations
+  providers:
+    # GitHub Copilot provider
+    - name: github-copilot
+      type: copilot
+      enabled: true
+      priority: 1
+      auth:
+        token: ${GITHUB_TOKEN}
+      config:
+        model: gpt-4
+        temperature: 0.3
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        concurrent_requests: 5
+
+    # OpenAI GPT-4 Turbo provider
+    - name: openai-gpt4-turbo
+      type: openai
+      enabled: true
+      priority: 2
+      auth:
+        api_key: ${OPENAI_API_KEY}
+      config:
+        model: gpt-4-turbo
+        temperature: 0.3
+        max_tokens: 4096
+        top_p: 1.0
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        tokens_per_minute: 100000
+        concurrent_requests: 10
+
+    # OpenAI GPT-4o provider (disabled by default)
+    - name: openai-gpt4o
+      type: openai
+      enabled: false
+      priority: 3
+      auth:
+        api_key: ${OPENAI_API_KEY}
+      config:
+        model: gpt-4o
+        temperature: 0.3
+        max_tokens: 4096
+      retry:
+        max_retries: 3
+        initial_delay: 1s
+        max_delay: 30s
+        multiplier: 2.0
+      cache:
+        enabled: true
+        ttl: 3600
+      rate_limits:
+        requests_per_minute: 60
+        tokens_per_minute: 100000
+
+  # Global caching configuration
+  caching:
+    enabled: true
+    ttl: 3600  # seconds
+    max_size: 100MB
+    eviction_policy: lru
+
+  # Global rate limiting configuration
+  rate_limiting:
+    requests_per_minute: 60
+    tokens_per_minute: 100000

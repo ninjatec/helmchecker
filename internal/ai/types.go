@@ -237,22 +237,22 @@ type ProviderConfig struct {
 // AuthConfig contains authentication credentials
 type AuthConfig struct {
 	// Type specifies the auth type (e.g., "bearer", "api_key")
-	Type string
+	Type string `yaml:"type"`
 
 	// Token for bearer token authentication
-	Token string
+	Token string `yaml:"token,omitempty"`
 
 	// APIKey for API key authentication
-	APIKey string
+	APIKey string `yaml:"api_key,omitempty"`
 
 	// Username for basic auth
-	Username string
+	Username string `yaml:"username,omitempty"`
 
 	// Password for basic auth
-	Password string
+	Password string `yaml:"password,omitempty"`
 
 	// AdditionalAuth for custom auth methods
-	AdditionalAuth map[string]string
+	AdditionalAuth map[string]string `yaml:"additional_auth,omitempty"`
 }
 
 // RateLimitConfig defines rate limiting rules
