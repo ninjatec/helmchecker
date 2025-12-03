@@ -6,10 +6,12 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	// Set some test environment variables
+	// Set required environment variables
 	_ = os.Setenv("KUBERNETES_NAMESPACE", "test-namespace")
 	_ = os.Setenv("GIT_REPOSITORY", "https://github.com/test/repo.git")
 	_ = os.Setenv("GITHUB_TOKEN", "test-token")
+	_ = os.Setenv("GITHUB_OWNER", "test-owner")
+	_ = os.Setenv("GITHUB_REPO", "test-repo")
 	_ = os.Setenv("CHECKER_DRY_RUN", "true")
 
 	cfg, err := Load()
@@ -37,6 +39,8 @@ func TestLoad(t *testing.T) {
 	_ = os.Unsetenv("KUBERNETES_NAMESPACE")
 	_ = os.Unsetenv("GIT_REPOSITORY")
 	_ = os.Unsetenv("GITHUB_TOKEN")
+	_ = os.Unsetenv("GITHUB_OWNER")
+	_ = os.Unsetenv("GITHUB_REPO")
 	_ = os.Unsetenv("CHECKER_DRY_RUN")
 }
 
