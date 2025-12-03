@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/go-git/go-git/v5 v5.16.4
 	github.com/google/go-github/v56 v56.0.0
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/oauth2 v0.32.0
 	helm.sh/helm/v3 v3.18.5
 )
@@ -92,6 +93,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pjbgf/sha1cd v0.5.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rubenv/sql-migrate v1.8.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
