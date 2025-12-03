@@ -55,6 +55,14 @@ spec:
               {{- toYaml . | nindent 14 }}
             {{- end }}
             env:
+            - name: HOME
+              value: "/tmp"
+            - name: HELM_CACHE_HOME
+              value: "/tmp/.cache/helm"
+            - name: HELM_CONFIG_HOME
+              value: "/tmp/.config/helm"
+            - name: HELM_DATA_HOME
+              value: "/tmp/.local/share/helm"
             - name: KUBERNETES_NAMESPACE
               value: {{ .Values.config.kubernetes.namespace | quote }}
             - name: GIT_REPOSITORY
@@ -116,11 +124,19 @@ spec:
             volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: helm-cache
+              mountPath: /tmp/.cache/helm
+            - name: helm-config
+              mountPath: /tmp/.config/helm
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumes:
           - name: tmp
+            emptyDir: {}
+          - name: helm-cache
+            emptyDir: {}
+          - name: helm-config
             emptyDir: {}
           {{- with .Values.extraVolumes }}
           {{- toYaml . | nindent 10 }}
