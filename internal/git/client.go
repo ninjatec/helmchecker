@@ -35,16 +35,37 @@ func (c *Client) CloneRepository(ctx context.Context) (string, *gogit.Repository
 		return "", nil, fmt.Errorf("failed to create temp directory: %w", err)
 	}
 
+	// Configure authentication if token is available
+	var auth *http.BasicAuth
+	if c.config.Token != "" {
+		auth = &http.BasicAuth{
+			Username: c.config.Username,
+			Password: c.config.Token,
+		}
+	}
+
 	// Clone the repository
-	repo, err := gogit.PlainCloneContext(ctx, tempDir, false, &gogit.CloneOptions{
+	cloneOptions := &gogit.CloneOptions{
 		URL:      c.config.Repository,
 		Progress: os.Stdout,
-	})
+	}
+	
+	// Only set auth if we have credentials
+	if auth != nil {
+		cloneOptions.Auth = auth
+	}
+
+	repo, err := gogit.PlainCloneContext(ctx, tempDir, false, cloneOptions)
 	if err != nil {
 		if removeErr := os.RemoveAll(tempDir); removeErr != nil {
 			fmt.Printf("Warning: failed to clean up temp directory: %v\n", removeErr)
 		}
-		return "", nil, fmt.Errorf("failed to clone repository: %w", err)
+		
+		// Provide more helpful error message
+		if c.config.Token == "" {
+			return "", nil, fmt.Errorf("failed to clone repository: %w (hint: make sure GIT_TOKEN environment variable is set if the repository requires authentication)", err)
+		}
+		return "", nil, fmt.Errorf("failed to clone repository: %w (hint: check repository URL and credentials)", err)
 	}
 
 	return tempDir, repo, nil

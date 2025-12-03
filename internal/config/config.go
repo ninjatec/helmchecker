@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Config represents the application configuration
@@ -72,7 +74,50 @@ func Load() (*Config, error) {
 		},
 	}
 
+	// Validate configuration
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+
 	return cfg, nil
+}
+
+// Validate validates the configuration
+func (c *Config) Validate() error {
+	var errors []string
+
+	// Validate Git configuration
+	if c.Git.Repository == "" {
+		errors = append(errors, "GIT_REPOSITORY environment variable is required")
+	}
+	
+	if c.Git.Token == "" && c.GitHub.Token == "" {
+		errors = append(errors, "either GIT_TOKEN or GITHUB_TOKEN environment variable is required")
+	}
+
+	// If Git token is empty but GitHub token is set, use GitHub token for Git operations
+	if c.Git.Token == "" && c.GitHub.Token != "" {
+		c.Git.Token = c.GitHub.Token
+	}
+
+	// Validate GitHub configuration (required for creating PRs)
+	if c.GitHub.Token == "" {
+		errors = append(errors, "GITHUB_TOKEN environment variable is required")
+	}
+	
+	if c.GitHub.Owner == "" {
+		errors = append(errors, "GITHUB_OWNER environment variable is required")
+	}
+	
+	if c.GitHub.Repo == "" {
+		errors = append(errors, "GITHUB_REPO environment variable is required")
+	}
+
+	if len(errors) > 0 {
+		return fmt.Errorf("configuration validation failed:\n  - %s", strings.Join(errors, "\n  - "))
+	}
+
+	return nil
 }
 
 func getEnvOrDefault(key, defaultValue string) string {
