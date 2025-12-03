@@ -122,6 +122,16 @@ secrets:
   # Git token for repository access (if different from GitHub token)
   gitToken: ""
 
+# External secret configuration
+externalSecret:
+  # Whether to use an external secret instead of the built-in secret
+  enabled: false
+  # Name of the external secret
+  name: ""
+  # Key names in the external secret
+  githubTokenKey: "GITHUB_TOKEN"
+  gitTokenKey: "GIT_TOKEN"
+
 # Service account configuration
 serviceAccount:
   # Whether to create a service account

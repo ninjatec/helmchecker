@@ -68,7 +68,8 @@ Key configuration parameters:
 | **Git** | `config.git.repository` | Target repository for PRs |
 | **GitHub** | `config.github.owner/repo` | GitHub repository details |
 | **Schedule** | `cronjob.schedule` | Cron schedule (default: daily at 2 AM) |
-| **Security** | `secrets.githubToken` | GitHub API token |
+| **Security** | `secrets.githubToken` | GitHub API token (built-in secrets) |
+| **Security** | `externalSecret.enabled` | Use external secrets (ESO/CSI) |
 | **Behavior** | `config.checker.dryRun` | Test mode without creating PRs |
 
 ## Development

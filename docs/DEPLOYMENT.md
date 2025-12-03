@@ -100,11 +100,48 @@ helm install helmchecker ./helm-chart \
 | `cronjob.timeZone` | Time zone | `"UTC"` |
 | `cronjob.suspend` | Suspend the cron job | `false` |
 
+### External Secret Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `externalSecret.enabled` | Use external secret instead of built-in | `false` |
+| `externalSecret.name` | Name of the external secret | `""` |
+| `externalSecret.githubTokenKey` | Key for GitHub token in external secret | `"GITHUB_TOKEN"` |
+| `externalSecret.gitTokenKey` | Key for Git token in external secret | `"GIT_TOKEN"` |
+
 ## Security Configuration
 
 ### Using External Secrets
 
-Instead of storing secrets in values files, you can create the secret manually:
+#### Option 1: External Secrets Operator (Recommended)
+
+If you're using External Secrets Operator or similar tools, you can reference external secrets directly:
+
+```yaml
+# Disable built-in secrets
+secrets:
+  githubToken: ""
+  gitToken: ""
+
+# Enable external secret reference
+externalSecret:
+  enabled: true
+  name: "helmchecker-secrets"      # Name of your external secret
+  githubTokenKey: "GITHUB_TOKEN"    # Key in the external secret
+  gitTokenKey: "GIT_TOKEN"          # Optional: separate git token key
+```
+
+Install with external secret:
+
+```bash
+helm install helmchecker ./helm-chart \
+  --set externalSecret.enabled=true \
+  --set externalSecret.name=helmchecker-secrets
+```
+
+#### Option 2: Manual Secret Creation
+
+Alternatively, create the secret manually:
 
 ```bash
 kubectl create secret generic helmchecker-secrets \

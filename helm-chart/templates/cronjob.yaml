@@ -79,6 +79,18 @@ spec:
               value: {{ .Values.config.checker.pullRequestTitle | quote }}
             - name: CHECKER_PR_BODY
               value: {{ .Values.config.checker.pullRequestBody | quote }}
+            {{- if .Values.externalSecret.enabled }}
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: {{ .Values.externalSecret.githubTokenKey }}
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecret.name }}
+                  key: {{ default .Values.externalSecret.githubTokenKey .Values.externalSecret.gitTokenKey }}
+            {{- else }}
             {{- if .Values.secrets.githubToken }}
             - name: GITHUB_TOKEN
               valueFrom:
@@ -92,6 +104,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "helmchecker.fullname" . }}-secrets
                   key: git-token
+            {{- end }}
             {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 12 }}

@@ -31,9 +31,20 @@ A Kubernetes application that automatically checks for outdated Helm charts and 
    helm install helmchecker ./helm-chart \
      --set image.repository=your-registry/helmchecker \
      --set image.tag=latest \
-     --set git.token=your-github-token
+     --set secrets.githubToken=your-github-token
+   ```
+
+   Or use with External Secrets Operator:
+   ```bash
+   helm install helmchecker ./helm-chart \
+     --set image.repository=your-registry/helmchecker \
+     --set image.tag=latest \
+     --set externalSecret.enabled=true \
+     --set externalSecret.name=helmchecker-secrets
    ```
 
 ## Configuration
 
-See `helm-chart/values.yaml` for configuration options.
+- **Built-in Secrets**: Configure via `secrets.githubToken` in values.yaml
+- **External Secrets**: Use External Secrets Operator with `externalSecret.enabled=true`
+- **Full Configuration**: See `helm-chart/values.yaml` for all configuration options
