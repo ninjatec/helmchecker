@@ -159,12 +159,12 @@ Use structured prompts with clear context sections
 ```
 
 **Tasks:**
-- [ ] Define prompt template structure
-- [ ] Create analysis prompt templates
-- [ ] Add context builders
-- [ ] Implement prompt validation
-- [ ] Create prompt examples
-- [ ] Write tests
+- [x] Define prompt template structure
+- [x] Create analysis prompt templates
+- [x] Add context builders
+- [x] Implement prompt validation
+- [x] Create prompt examples
+- [x] Write tests
 
 **Files to Create:**
 - `internal/ai/copilot/prompts.go`
@@ -193,14 +193,14 @@ Use the official OpenAI API specification
 ```
 
 **Tasks:**
-- [ ] Create `openai` package
-- [ ] Implement `OpenAIProvider` struct
-- [ ] Add API authentication
-- [ ] Implement chat completions
-- [ ] Add function calling
-- [ ] Implement token counting
-- [ ] Add cost calculation
-- [ ] Write integration tests
+- [x] Create `openai` package
+- [x] Implement `OpenAIProvider` struct
+- [x] Add API authentication
+- [x] Implement chat completions
+- [x] Add function calling
+- [x] Implement token counting
+- [x] Add cost calculation
+- [x] Write integration tests
 
 **Files to Create:**
 - `internal/ai/openai/client.go`
