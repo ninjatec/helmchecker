@@ -19,23 +19,15 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-s -w" -o helmchecker ./cmd/helmchecker
 
-# Final stage
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates git openssh-client
-
-# Create a non-root user with specific UID/GID
-RUN adduser -D -s /bin/sh -u 1000 helmchecker
+# Final stage - using distroless for minimal attack surface
+FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /app
 
 # Copy the binary from builder stage with execute permissions
 COPY --from=builder --chmod=755 /app/helmchecker .
 
-# Create directory for SSH keys that can be accessed by the non-root user
-RUN mkdir -p /home/helmchecker/.ssh && chmod 700 /home/helmchecker/.ssh && chown -R helmchecker:helmchecker /home/helmchecker
-
-# Switch to non-root user
-USER helmchecker
+# distroless/static-debian12:nonroot already runs as nonroot user (UID 65532)
+# and includes ca-certificates
 
 ENTRYPOINT ["./helmchecker"]
