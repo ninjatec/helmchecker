@@ -51,8 +51,16 @@ config:
       *Generated automatically by helmchecker 🤖*
 
 secrets:
-  # Use external secret management in production
-  githubToken: ""  # Managed externally
+  # Option 1: Built-in secrets (not recommended for production)
+  githubToken: ""  # Leave empty when using external secrets
+  gitToken: ""     # Leave empty when using external secrets
+
+# Option 2: External secret configuration (recommended for production)
+externalSecret:
+  enabled: true  # Use external secrets in production
+  name: "helmchecker-secrets"        # Name of your external secret
+  githubTokenKey: "GITHUB_TOKEN"     # Key in the external secret
+  gitTokenKey: "GIT_TOKEN"           # Optional: separate git token key
 
 cronjob:
   # Run daily at 2 AM UTC

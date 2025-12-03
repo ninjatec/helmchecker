@@ -25,8 +25,18 @@ config:
     pullRequestTitle: "[DEV] Update Helm chart %s to version %s"
 
 secrets:
+  # Option 1: Built-in secrets (for development/testing)
   # Replace with your actual GitHub token
   githubToken: "ghp_example_token_replace_with_real_one"
+  gitToken: ""  # Optional: use same as githubToken if empty
+
+# Option 2: External secret configuration (recommended for production)
+# Uncomment to use External Secrets Operator or similar
+externalSecret:
+  enabled: false  # Set to true to use external secrets
+  name: "helmchecker-dev-secrets"  # Name of your external secret
+  githubTokenKey: "GITHUB_TOKEN"     # Key in the external secret
+  gitTokenKey: "GIT_TOKEN"           # Optional: separate git token key
 
 cronjob:
   # Run more frequently for testing (every hour)
